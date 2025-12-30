@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Plus, Edit2, Trash2, User, LogOut, Check, X } from 'lucide-react';
+import appLogo from '/src/assets/icon.png';
 
 const TaskManagerApp = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [users, setUsers] = useState([
-    { id: 1, username: 'admin', password: 'admin123', role: 'admin' },
-    { id: 2, username: 'user1', password: 'user123', role: 'user' }
+    { id: 1, username: 'gaurav', password: 'Gaurav', role: 'user' }
   ]);
   const [tasks, setTasks] = useState([
     {
@@ -13,18 +13,44 @@ const TaskManagerApp = () => {
       title: 'Sample Task',
       description: 'This is a sample task',
       dueDate: '2025-10-10',
-      status: 'pending',
+      status: 'todo',
       priority: 'high',
       assignedTo: 1,
       createdBy: 1
     }
   ]);
+
+  useEffect(() => {
+  document.title = currentUser
+    ? `Task Manager | ${currentUser.username}`
+    : 'Task Manager | Login';
+}, [currentUser]);
+
+
+  useEffect(() => {
+  const savedUser = localStorage.getItem('currentUser');
+  if (savedUser) {
+    setCurrentUser(JSON.parse(savedUser));
+  }
+}, []);
+
+const isOverdue = (task) => {
+  if (task.status === 'completed') return false;
+  const today = new Date();
+  const due = new Date(task.dueDate);
+  return due < today;
+};
+
+const overdueBadgeStyle =
+  'bg-rose-900/40 text-rose-300 border border-rose-700';
+
+
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [taskForm, setTaskForm] = useState({
     title: '', 
     description: '', 
     dueDate: '', 
-    status: 'pending', 
+    status: 'todo', 
     priority: 'medium', 
     assignedTo: 1
   });
@@ -45,12 +71,18 @@ const TaskManagerApp = () => {
     }
   }, [users]);
 
+  useEffect(() => {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}, [tasks]);
+
+
   const handleLogin = () => {
     const user = users.find(
       u => u.username === loginForm.username && u.password === loginForm.password
     );
     if (user) {
       setCurrentUser(user);
+      localStorage.setItem('currentUser', JSON.stringify(user));
       setLoginForm({ username: '', password: '' });
     } else {
       alert('Invalid credentials');
@@ -59,6 +91,7 @@ const TaskManagerApp = () => {
 
   const handleLogout = () => {
     setCurrentUser(null);
+    localStorage.removeItem('currentUser');
     setShowTaskForm(false);
     setEditingTask(null);
     setViewingTask(null);
@@ -119,7 +152,7 @@ const TaskManagerApp = () => {
       title: '', 
       description: '', 
       dueDate: '', 
-      status: 'pending', 
+      status: 'todo', 
       priority: 'medium', 
       assignedTo: users[0]?.id || 1 
     });
@@ -143,13 +176,20 @@ const TaskManagerApp = () => {
       title: '', 
       description: '', 
       dueDate: '', 
-      status: 'pending', 
+      status: 'todo', 
       priority: 'medium', 
       assignedTo: users[0]?.id || 1 
     });
     setEditingTask(null);
     setShowTaskForm(true);
   };
+
+const nextStatus = (status) => {
+  if (status === 'todo') return 'in-progress';
+  if (status === 'in-progress') return 'completed';
+  return 'todo';
+};
+
 
   const handleDeleteTask = (taskId) => {
     setTasks(tasks.filter(t => t.id !== taskId));
@@ -184,15 +224,17 @@ const TaskManagerApp = () => {
   const totalPages = Math.ceil(getFilteredTasks().length / tasksPerPage);
 
   const priorityColors = {
-    low: 'bg-green-100 border-green-300 text-green-800',
-    medium: 'bg-yellow-100 border-yellow-300 text-yellow-800',
-    high: 'bg-red-100 border-red-300 text-red-800'
-  };
+  low: 'bg-emerald-950/30 border-emerald-600 text-emerald-300',
+  medium: 'bg-amber-950/30 border-amber-600 text-amber-300',
+  high: 'bg-rose-950/30 border-rose-600 text-rose-300'
+};
+
+
 
   if (!currentUser) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 flex items-center justify-center p-4">
+        <div className="bg-slate-500 text-slate-100 rounded-xl shadow-2xl p-8 w-full max-w-md">
           <div className="text-center mb-8">
             <div className="bg-indigo-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
               <User className="text-white" size={32} />
@@ -222,15 +264,14 @@ const TaskManagerApp = () => {
             </div>
             <button
               onClick={handleLogin}
-              className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+              className="w-full bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700"
             >
               Sign In
             </button>
           </div>
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg text-sm">
+          <div className="mt-6 p-4 bg-gray-100 rounded-lg text-sm">
             <p className="font-semibold text-gray-700 mb-2">Demo Credentials:</p>
-            <p className="text-gray-600">Admin: admin / admin123</p>
-            <p className="text-gray-600">User: user1 / user123</p>
+            <p className="text-gray-600">User: gaurav / Gaurav</p>
           </div>
         </div>
       </div>
@@ -239,9 +280,19 @@ const TaskManagerApp = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-slate-900 shadow-md border-b border-slate-700">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-800">Task Manager</h1>
+          <div className="flex items-center gap-3">
+  <img
+    src={appLogo}
+    alt="Task Manager Logo"
+    className="h-10 w-15 object-contain hover:scale-105 transition-transform"
+  />
+  <h1 className="text-2xl font-bold text-emerald-400">
+    Task Manager
+  </h1>
+</div>
+
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600">
               {currentUser.username} ({currentUser.role})
@@ -268,7 +319,7 @@ const TaskManagerApp = () => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         {showUserManagement && currentUser.role === 'admin' && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+            <div className="bg-slate-500 text-slate-100 rounded-xl shadow-2xl p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">User Management</h2>
                 <button onClick={() => setShowUserManagement(false)} className="text-gray-500 hover:text-gray-700">
@@ -334,7 +385,7 @@ const TaskManagerApp = () => {
 
         {viewingTask && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl">
+            <div className="bg-slate-500 text-slate-100 rounded-xl shadow-2xl p-6 w-full max-w-2xl">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">Task Details</h2>
                 <button onClick={() => setViewingTask(null)} className="text-gray-500 hover:text-gray-700">
@@ -353,7 +404,7 @@ const TaskManagerApp = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-semibold text-gray-600">Due Date</label>
-                    <p className="text-gray-800">{viewingTask.dueDate}</p>
+                    <p className="text-slate-900">{viewingTask.dueDate}</p>
                   </div>
                   <div>
                     <label className="text-sm font-semibold text-gray-600">Status</label>
@@ -395,7 +446,7 @@ const TaskManagerApp = () => {
 
         {deleteConfirm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <div className="bg-slate-500 text-slate-100 rounded-xl shadow-2xl p-6 w-full max-w-md">
               <h3 className="text-xl font-bold text-gray-800 mb-4">Confirm Deletion</h3>
               <p className="text-gray-600 mb-6">Are you sure you want to delete this task? This action cannot be undone.</p>
               <div className="flex gap-2">
@@ -418,9 +469,9 @@ const TaskManagerApp = () => {
 
         {showTaskForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl">
+            <div className="bg-slate-900 text-slate-100 rounded-xl shadow-2xl p-6 w-full max-w-2xl">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">
+                <h2 className="text-2xl font-bold text-slate-100">
                   {editingTask ? 'Edit Task' : 'Create New Task'}
                 </h2>
                 <button
@@ -456,7 +507,7 @@ const TaskManagerApp = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Due Date *</label>
+                    <label className="block text-sm font-medium text-slate-900 mb-2">Due Date *</label>
                     <input
                       type="date"
                       value={taskForm.dueDate}
@@ -484,8 +535,10 @@ const TaskManagerApp = () => {
                         onChange={(e) => setTaskForm({ ...taskForm, status: e.target.value })}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                       >
-                        <option value="pending">Pending</option>
+                        <option value="todo">To Do</option>
+                        <option value="in-progress">In Progress</option>
                         <option value="completed">Completed</option>
+
                       </select>
                     </div>
                   )}
@@ -550,7 +603,7 @@ const TaskManagerApp = () => {
           </button>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border">
+        <div className="bg-slate-500 text-slate-100 rounded-xl shadow-2xl p-6 border">
           <div className="p-6">
             <h2 className="text-xl font-bold text-gray-800 mb-4">
               {currentUser.role === 'admin' ? 'All Tasks' : 'My Assigned Tasks'}
@@ -561,18 +614,37 @@ const TaskManagerApp = () => {
               <div className="space-y-3">
                 {getPaginatedTasks().map(task => (
                   <div
-                    key={task.id}
-                    className={`p-4 border-l-4 rounded-lg ${priorityColors[task.priority]} border`}
-                  >
+  key={task.id}
+ className={`p-4 rounded-lg border-l-4 ${
+  isOverdue(task)
+    ? 'border-rose-500 bg-rose-950/30'
+    : task.status === 'completed'
+      ? 'border-emerald-500 bg-emerald-950/30'
+      : task.status === 'in-progress'
+        ? 'border-indigo-500 bg-indigo-950/30'
+        : 'border-slate-500 bg-slate-800'
+}`}
+
+>
+
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <h3 className="font-semibold text-lg text-gray-800 mb-1">{task.title}</h3>
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-900">
                           <span className="flex items-center gap-1">
                             <Calendar size={16} />
                             {task.dueDate}
                           </span>
-                          <span className="capitalize">Status: {task.status}</span>
+                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-slate-700 text-slate-100">
+
+  {task.status}
+</span>
+
+{isOverdue(task) && (
+  <span className={`px-3 py-1 rounded-full text-xs font-medium ${overdueBadgeStyle}`}>
+    Overdue
+  </span>
+)}
                           <span className="capitalize">Priority: {task.priority}</span>
                           {currentUser.role === 'admin' && (
                             <span>Assigned: {users.find(u => u.id === task.assignedTo)?.username || 'Unknown'}</span>
@@ -595,12 +667,12 @@ const TaskManagerApp = () => {
                           <Edit2 size={18} />
                         </button>
                         <button
-                          onClick={() => handleStatusChange(task.id, task.status === 'pending' ? 'completed' : 'pending')}
-                          className={`p-2 rounded ${task.status === 'completed' ? 'text-gray-600 hover:bg-gray-50' : 'text-green-600 hover:bg-green-50'}`}
-                          title={task.status === 'completed' ? 'Mark as Pending' : 'Mark as Completed'}
-                        >
-                          <Check size={18} />
-                        </button>
+  onClick={() => handleStatusChange(task.id, nextStatus(task.status))}
+  className="p-2 text-green-600 hover:bg-green-50 rounded"
+>
+  <Check size={18} />
+</button>
+
                         <button
                           onClick={() => setDeleteConfirm(task.id)}
                           className="p-2 text-red-600 hover:bg-red-50 rounded"
@@ -611,7 +683,7 @@ const TaskManagerApp = () => {
                       </div>
                     </div>
                     <div className="mt-2 flex gap-2">
-                      <span className="text-xs text-gray-600 mr-2">Move to:</span>
+                      <span className="text-xs text-slate-900 mr-2">Move to:</span>
                       {['low', 'medium', 'high'].map(priority => (
                         <button
                           key={priority}
@@ -637,7 +709,7 @@ const TaskManagerApp = () => {
               <button
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-gray-700 text-slate-100 rounded hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Previous
               </button>
