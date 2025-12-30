@@ -53,7 +53,7 @@ npm install
 ```
 3. Run the app locally:
 ```
-npm install
+npm start
 ```
 4. Open http://localhost:3000 in your browser.
 
