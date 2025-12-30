@@ -1,16 +1,67 @@
-# React + Vite
+# Task Manager
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, user-friendly **Task Manager** application with improved UI and enhanced functionality. This project focuses on refining the user experience while keeping the core structure intact, making task management seamless and visually appealing.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Intuitive Task Management**
+  - Add, edit, and delete tasks effortlessly.
+  - Mark tasks as completed or pending.
+  - Organize tasks by categories or priorities.
 
-## React Compiler
+- **Enhanced UI/UX**
+  - Modern color palette for a fresh and clean look.
+  - Responsive design compatible with all devices.
+  - Smooth animations and interactive elements for better engagement.
+  
+- **Customizable Experience**
+  - Personalized themes and colors.
+  - Easy navigation with improved layout and icons.
+  
+- **Persistent User Sessions**
+  - Implemented mechanisms to reduce frequent logouts.
+  
+- **Browser Enhancements**
+  - Custom favicon and dynamic browser tab titles for better branding.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
 
-## Expanding the ESLint configuration
+- **Frontend:** React.js, Tailwind CSS, DaisyUI  
+- **State Management:** React State Hooks  
+- **Tools & Libraries:** React Icons, React Router, Local Storage  
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Project Structure
+
+/src
+├─ components/ # Reusable UI components
+├─ pages/ # Main pages (Home, Tasks, etc.)
+├─ hooks/ # Custom React hooks
+├─ assets/ # Images, icons, logos
+├─ App.jsx # Main app entry
+└─ index.jsx # React DOM render
+
+
+## Setup Instructions
+
+1. Clone the repository:  
+```
+git clone https://github.com/yourusername/task-manager-improvements.git
+```
+2. Install dependencies:
+```
+npm install
+```
+3. Run the app locally:
+```
+npm install
+```
+4. Open http://localhost:3000 in your browser.
+
+Author
+
+Gaurav – Full-stack enthusiast | MERN Developer
+
+GitHub: https://github.com/itzgaurav2005
+
+LinkedIn: https://www.linkedin.com/in/gaurav-kumar-pandey-438a9725b/
+
