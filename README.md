@@ -31,7 +31,7 @@ A modern, user-friendly **Task Manager** application with improved UI and enhanc
 - **Tools & Libraries:** React Icons, React Router, Local Storage  
 
 ## Project Structure
-
+```
 /src
 ├─ components/ # Reusable UI components
 ├─ pages/ # Main pages (Home, Tasks, etc.)
@@ -39,7 +39,7 @@ A modern, user-friendly **Task Manager** application with improved UI and enhanc
 ├─ assets/ # Images, icons, logos
 ├─ App.jsx # Main app entry
 └─ index.jsx # React DOM render
-
+```
 
 ## Setup Instructions
 
